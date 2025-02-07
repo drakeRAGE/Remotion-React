@@ -117,7 +117,7 @@ export const ApiVideo = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://remotion.free.beeceptor.com/data');
+        const response = await axios.get('https://mp9c5a23ba18803f593c.free.beeceptor.com/data');
         console.log(response)
         setData(response.data);
       } catch (error) {
