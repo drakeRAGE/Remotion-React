@@ -1,15 +1,17 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  optimizeDeps: {
-    include: ['@remotion/core', '@remotion/player'],
+  resolve: {
+    alias: {
+      react: 'react',
+      'react-dom': 'react-dom',
+    },
   },
   build: {
-    commonjsOptions: {
-      include: [/@remotion\/*/],
+    rollupOptions: {
+      external: ['react', 'react-dom'],
     },
   },
 });
