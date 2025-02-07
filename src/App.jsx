@@ -52,7 +52,7 @@ function App() {
         >
           <Player
             component={MyVideo}
-            durationInFrames={240}
+            durationInFrames={120}
             fps={60}
             compositionWidth={1920}
             compositionHeight={1080}

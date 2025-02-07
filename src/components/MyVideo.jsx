@@ -1,4 +1,5 @@
 import React from 'react';
+import { useCurrentFrame, interpolate } from 'remotion';
 import { motion } from 'framer-motion';
 
 const GradientBackground = () => (
@@ -15,169 +16,133 @@ const GradientBackground = () => (
   />
 );
 
-const FloatingShapes = () => (
-  <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-    {[...Array(5)].map((_, i) => (
-      <motion.div
-        key={i}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{
-          opacity: [0.2, 0.4, 0.2],
-          scale: [1, 1.2, 1],
-          rotate: [0, 180, 360],
-          x: [Math.random() * 100, Math.random() * -100],
-          y: [Math.random() * 100, Math.random() * -100],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          delay: i * 0.5,
-        }}
-        style={{
-          position: 'absolute',
-          width: '100px',
-          height: '100px',
-          borderRadius: '20px',
-          background: 'rgba(255, 255, 255, 0.1)',
-          left: `${Math.random() * 80}%`,
-          top: `${Math.random() * 80}%`,
-        }}
-      />
-    ))}
-  </div>
-);
-
-const AnimatedText = ({ text, delay = 0, style = {} }) => {
-  const letterVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: delay + (i * 0.05),
-        duration: 0.5,
-        ease: [0.2, 0.65, 0.3, 0.9],
-      },
-    }),
-  };
-
+const FloatingShapes = () => {
+  const frame = useCurrentFrame();
   return (
-    <motion.div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        ...style,
-      }}
-    >
-      {text.split('').map((char, i) => (
-        <motion.span
-          key={i}
-          custom={i}
-          variants={letterVariants}
-          initial="hidden"
-          animate="visible"
-          style={{ 
-            display: 'inline-block',
-            whiteSpace: 'pre',
-          }}
-        >
-          {char}
-        </motion.span>
-      ))}
-    </motion.div>
-  );
-};
-
-const GradientText = ({ text, delay = 0 }) => {
-  const containerVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.8,
-        delay,
-        ease: [0.2, 0.65, 0.3, 0.9],
-      },
-    },
-  };
-
-  return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      style={{
-        fontSize: '120px',
-        fontWeight: '800',
-        background: 'linear-gradient(to right, #60a5fa, #c084fc)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        marginBottom: '30px',
-        textShadow: '0 0 30px rgba(255,255,255,0.2)',
-      }}
-    >
-      <AnimatedText text={text} delay={delay} />
-    </motion.div>
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+      {[...Array(10)].map((_, i) => {
+        const progress = (frame / 120) * Math.PI * 2;
+        const x = Math.sin(progress + i) * 100;
+        const y = Math.cos(progress + i) * 100;
+        
+        return (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              width: '100px',
+              height: '100px',
+              borderRadius: '20px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              left: `${ i * 10}%`,
+              top: `${ i * 10}%`,
+              transform: `translate(${x}px, ${y}px) rotate(${frame * 2}deg)`,
+            }}
+          />
+        );
+      })}
+    </div>
   );
 };
 
 export const MyVideo = () => {
+  const frame = useCurrentFrame();
+
+  // Welcome text animation (0-30 frames)
+  const welcomeOpacity = interpolate(frame, [0, 30], [0, 1], {
+    extrapolateRight: 'clamp',
+  });
+  const welcomeY = interpolate(frame, [0, 30], [50, 0], {
+    extrapolateRight: 'clamp',
+  });
+
+  // Remotion text animation (30-60 frames)
+  const remotionOpacity = interpolate(frame, [30, 60], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const remotionScale = interpolate(frame, [30, 60], [0.5, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+
+  // Description text animation (60-90 frames)
+  const descriptionOpacity = interpolate(frame, [60, 90], [0, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+  const descriptionY = interpolate(frame, [60, 90], [20, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp',
+  });
+
   return (
-    <div style={{
-      flex: 1,
-      width: '100%',
-      height: '100%',
-      position: 'relative',
-      overflow: 'hidden',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}>
+    <div
+      style={{
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <GradientBackground />
       <FloatingShapes />
-      
-      <div style={{
-        position: 'relative',
-        zIndex: 1,
-        textAlign: 'center',
-      }}>
-        <AnimatedText 
-          text="Welcome to"
-          delay={0.2}
+
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          textAlign: 'center',
+        }}
+      >
+        {/* Welcome Text */}
+        <div
           style={{
             fontSize: '72px',
             fontWeight: 'bold',
             color: 'white',
             marginBottom: '20px',
             textShadow: '2px 2px 8px rgba(0,0,0,0.3)',
-          }}
-        />
-
-        <GradientText text="Remotion" delay={1} />
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ 
-            opacity: 1, 
-            y: 0,
-            transition: {
-              delay: 2,
-              duration: 0.8,
-              ease: [0.2, 0.65, 0.3, 0.9],
-            }
+            opacity: welcomeOpacity,
+            transform: `translateY(${welcomeY}px)`,
           }}
         >
-          <AnimatedText 
-            text="Create amazing videos with React"
-            delay={2.2}
-            style={{
-              fontSize: '32px',
-              color: '#e2e8f0',
-              textShadow: '1px 1px 4px rgba(0,0,0,0.2)',
-            }}
-          />
-        </motion.div>
+          Welcome to
+        </div>
+
+        {/* Remotion Text */}
+        <div
+          style={{
+            fontSize: '120px',
+            fontWeight: '800',
+            background: 'linear-gradient(to right, #60a5fa, #c084fc)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            marginBottom: '30px',
+            textShadow: '0 0 30px rgba(255,255,255,0.2)',
+            opacity: remotionOpacity,
+            transform: `scale(${remotionScale})`,
+          }}
+        >
+          Remotion
+        </div>
+
+        {/* Description Text */}
+        <div
+          style={{
+            fontSize: '32px',
+            color: '#e2e8f0',
+            textShadow: '1px 1px 4px rgba(0,0,0,0.2)',
+            opacity: descriptionOpacity,
+            transform: `translateY(${descriptionY}px)`,
+          }}
+        >
+          Create amazing videos with React
+        </div>
       </div>
     </div>
   );
