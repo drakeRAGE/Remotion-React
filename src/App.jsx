@@ -1,6 +1,6 @@
 import React from 'react';
 import { Player } from '@remotion/player';
-import { MyVideo } from './components/MyVideo';
+import { ApiVideo } from './components/ApiVideo';
 import { motion } from 'framer-motion';
 
 function App() {
@@ -36,7 +36,7 @@ function App() {
             textShadow: '0 2px 4px rgba(0,0,0,0.2)'
           }}
         >
-          Remotion Animation
+          Remotion Animation with API Data
         </motion.h1>
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -51,8 +51,8 @@ function App() {
           }}
         >
           <Player
-            component={MyVideo}
-            durationInFrames={120}
+            component={ApiVideo}
+            durationInFrames={240}
             fps={60}
             compositionWidth={1920}
             compositionHeight={1080}
