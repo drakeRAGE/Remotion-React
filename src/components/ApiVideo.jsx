@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCurrentFrame, interpolate } from 'remotion';
 import axios from 'axios';
 

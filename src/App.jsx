@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState, useEffect } from 'react';
+import { useRef, useCallback, useState, useEffect } from 'react';
 import { Player } from '@remotion/player';
 import { ApiVideo } from './components/ApiVideo';
 import { motion } from 'framer-motion';
