@@ -3,15 +3,5 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      react: 'react',
-      'react-dom': 'react-dom',
-    },
-  },
-  build: {
-    rollupOptions: {
-      external: ['react', 'react-dom'],
-    },
-  },
+  // Remove the resolve.alias and build.rollupOptions.external configurations
 });
