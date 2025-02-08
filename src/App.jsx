@@ -74,35 +74,38 @@ function App() {
 
       // Create a canvas element
       const canvas = document.createElement('canvas');
-      canvas.width = 1920;  // Use fixed width
-      canvas.height = 1080; // Use fixed height
+      
+      // Get the actual content dimensions
+      const contentWidth = container.scrollWidth;
+      const contentHeight = container.scrollHeight;
 
-      // Use html2canvas with proper scaling
+      // Use html2canvas with dynamic scaling
       const html2canvas = (await import('html2canvas')).default;
       const screenshot = await html2canvas(container, {
         useCORS: true,
         allowTaint: true,
         backgroundColor: null,
         logging: true,
-        width: 1920,
-        height: 1080,
+        width: contentWidth,
+        height: contentHeight,
         scale: 1,
         scrollX: -rect.left,
         scrollY: -rect.top,
         x: 0,
         y: 0,
-        windowWidth: 1920,
-        windowHeight: 1080,
+        windowWidth: contentWidth,
+        windowHeight: contentHeight,
         onclone: (clonedDoc) => {
           const clonedContainer = clonedDoc.querySelector('[data-remotion-canvas]');
           if (clonedContainer) {
-            // Force dimensions on cloned element
-            clonedContainer.style.width = '1920px';
-            clonedContainer.style.height = '1080px';
+            // Force full content dimensions on cloned element
+            clonedContainer.style.width = `${contentWidth}px`;
+            clonedContainer.style.height = `${contentHeight}px`;
             clonedContainer.style.transform = 'none';
             clonedContainer.style.position = 'relative';
             clonedContainer.style.left = '0';
             clonedContainer.style.top = '0';
+            clonedContainer.style.overflow = 'visible';
           }
         }
       });
