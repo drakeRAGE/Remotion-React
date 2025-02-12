@@ -2,6 +2,7 @@ import { useRef, useCallback, useState, useEffect } from 'react';
 import { Player } from '@remotion/player';
 import { ApiVideo } from './components/ApiVideo';
 import { motion } from 'framer-motion';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const playerRef = useRef(null);
@@ -137,119 +138,121 @@ function App() {
   }, [waitForContent]);
 
   return (
-    <div style={{
-      width: '100%',
-      minHeight: '100vh',
-      background: 'linear-gradient(to bottom, #0f172a, #1e293b)',
-      padding: '2rem',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        style={{
-          maxWidth: '1024px',
-          width: '100%',
-          textAlign: 'center'
-        }}
-      >
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          style={{
-            fontSize: '2.25rem',
-            fontWeight: 'bold',
-            marginBottom: '2rem',
-            color: 'white',
-            textShadow: '0 2px 4px rgba(0,0,0,0.2)'
-          }}
-        >
-          Remotion Animation with API Data
-        </motion.h1>
+    <ErrorBoundary>
+      <div style={{
+        width: '100%',
+        minHeight: '100vh',
+        background: 'linear-gradient(to bottom, #0f172a, #1e293b)',
+        padding: '2rem',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
         <motion.div
-          ref={containerRef}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          style={{
-            aspectRatio: '16/9',
-            backgroundColor: 'black',
-            borderRadius: '1rem',
-            overflow: 'hidden',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-            position: 'relative',
-            width: '100%',
-            height: '100%'
-          }}
-        >
-          <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-            <Player
-              ref={playerRef}
-              component={ApiVideo}
-              durationInFrames={240}
-              fps={60}
-              compositionWidth={1920}
-              compositionHeight={1080}
-              style={{
-                width: '100%',
-                height: '100%',
-                position: 'absolute',
-                left: 0,
-                top: 0
-              }}
-              controls
-              autoPlay
-              loop
-            />
-          </div>
-          {isCapturing && !isActuallyCapturing && (
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
-              color: 'white',
-              fontSize: '1.2rem'
-            }}>
-              Capturing frame...
-            </div>
-          )}
-        </motion.div>
-        
-        <motion.button
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          onClick={captureFrame}
-          disabled={isCapturing}
+          transition={{ duration: 0.8 }}
           style={{
-            marginTop: '1rem',
-            padding: '0.75rem 1.5rem',
-            backgroundColor: isCapturing ? '#94a3b8' : '#3b82f6',
-            color: 'white',
-            border: 'none',
-            borderRadius: '0.5rem',
-            fontSize: '1rem',
-            fontWeight: '500',
-            cursor: isCapturing ? 'not-allowed' : 'pointer',
-            transition: 'background-color 0.2s',
+            maxWidth: '1024px',
+            width: '100%',
+            textAlign: 'center'
           }}
-          onMouseOver={(e) => !isCapturing && (e.target.style.backgroundColor = '#2563eb')}
-          onMouseOut={(e) => !isCapturing && (e.target.style.backgroundColor = '#3b82f6')}
         >
-          {isCapturing ? 'Capturing...' : 'Capture Frame'}
-        </motion.button>
-      </motion.div>
-    </div>
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            style={{
+              fontSize: '2.25rem',
+              fontWeight: 'bold',
+              marginBottom: '2rem',
+              color: 'white',
+              textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+            }}
+          >
+            Remotion Animation with API Data
+          </motion.h1>
+          <motion.div
+            ref={containerRef}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            style={{
+              aspectRatio: '16/9',
+              backgroundColor: 'black',
+              borderRadius: '1rem',
+              overflow: 'hidden',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              position: 'relative',
+              width: '100%',
+              height: '100%'
+            }}
+          >
+            <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+              <Player
+                ref={playerRef}
+                component={ApiVideo}
+                durationInFrames={240}
+                fps={60}
+                compositionWidth={1920}
+                compositionHeight={1080}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  position: 'absolute',
+                  left: 0,
+                  top: 0
+                }}
+                controls
+                autoPlay
+                loop
+              />
+            </div>
+            {isCapturing && !isActuallyCapturing && (
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                color: 'white',
+                fontSize: '1.2rem'
+              }}>
+                Capturing frame...
+              </div>
+            )}
+          </motion.div>
+          
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            onClick={captureFrame}
+            disabled={isCapturing}
+            style={{
+              marginTop: '1rem',
+              padding: '0.75rem 1.5rem',
+              backgroundColor: isCapturing ? '#94a3b8' : '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '0.5rem',
+              fontSize: '1rem',
+              fontWeight: '500',
+              cursor: isCapturing ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.2s',
+            }}
+            onMouseOver={(e) => !isCapturing && (e.target.style.backgroundColor = '#2563eb')}
+            onMouseOut={(e) => !isCapturing && (e.target.style.backgroundColor = '#3b82f6')}
+          >
+            {isCapturing ? 'Capturing...' : 'Capture Frame'}
+          </motion.button>
+        </motion.div>
+      </div>
+    </ErrorBoundary>
   );
 }
 

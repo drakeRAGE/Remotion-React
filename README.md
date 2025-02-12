@@ -57,6 +57,13 @@ This project leverages Remotion to create dynamic, programmatically generated vi
 - Programmatic video generation
 - Smooth interpolation and transitions
 
+### New Features Added
+- **Enhanced Data Visualization**: Improved animations for data items with additional visual effects.
+- **New API Integration**: Added support for a new API endpoint for fetching real-time data.
+- **Improved Performance**: Optimized rendering performance for smoother playback.
+- **Enhanced User Experience**: Added interactive elements and animations to improve user engagement.
+- **Advanced Error Handling**: Implemented robust error handling mechanisms to ensure seamless video rendering.
+
 ## 🧪 Testing and Mock Data
 
 ### Dummy API Data with Beeceptor

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useCurrentFrame, interpolate } from 'remotion';
 import axios from 'axios';
+import { CONFIG } from '../config';
 
 const GradientBackground = () => (
   <div
@@ -111,107 +112,65 @@ const DataItem = ({ item, index, frame }) => {
 };
 
 export const ApiVideo = () => {
-  const [data, setData] = useState([]);
+  const [todos, setTodos] = useState([]);
+  const [filteredTodos, setFilteredTodos] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCompleted, setFilterCompleted] = useState(null);
   const frame = useCurrentFrame();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchTodos = async () => {
       try {
-        const response = await axios.get('https://mp7bb00bce388bc29577.free.beeceptor.com/data');
-        console.log(response)
-        setData(response.data);
+        const response = await axios.get(CONFIG.API_ENDPOINT);
+        setTodos(response.data.slice(0, 10)); // Limit to 10 items
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Failed to fetch todos:', error);
       }
     };
-    fetchData();
+
+    fetchTodos();
   }, []);
 
-  // dummy data response example :
-  // [
-  //   {
-  //     "id": 1,
-  //     "title": "Create an endpoint at Beeceptor.",
-  //     "completed": true
-  //   },
-  //   {
-  //     "id": 2,
-  //     "title": "Send a request to your new Beeceptor endpoint.",
-  //     "completed": true
-  //   },
-  //   {
-  //     "id": 3,
-  //     "title": "Create a mocking rule to send dummy data.",
-  //     "completed": false
-  //   },
-  //   {
-  //     "id": 4,
-  //     "title": "Try out a failure response by sending 500 HTTP status code.",
-  //     "completed": false
-  //   },
-  //   {
-  //     "id": 5,
-  //     "title": "Use the proxy feature to send a request to a real API. Intercept traffic using Beeceptor.",
-  //     "completed": false
-  //   }
-  // ]
+  useEffect(() => {
+    let result = todos;
 
-  // Main text animations
-  const welcomeOpacity = interpolate(frame, [0, 30], [0, 1], {
-    extrapolateRight: 'clamp',
-  });
-  const welcomeY = interpolate(frame, [0, 30], [50, 0], {
-    extrapolateRight: 'clamp',
-  });
+    // Apply search filter
+    if (searchTerm) {
+      result = result.filter(todo => 
+        todo.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
 
-  const remotionOpacity = interpolate(frame, [30, 60], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
-  const remotionScale = interpolate(frame, [30, 60], [0.5, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
+    // Apply completed filter
+    if (filterCompleted !== null) {
+      result = result.filter(todo => todo.completed === filterCompleted);
+    }
 
-  const descriptionOpacity = interpolate(frame, [60, 90], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
-  const descriptionY = interpolate(frame, [60, 90], [20, 0], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
+    setFilteredTodos(result);
+  }, [todos, searchTerm, filterCompleted]);
+
+  const dataToRender = filteredTodos.length > 0 ? filteredTodos : todos;
 
   return (
     <div style={{
-      flex: 1,
-      width: '100%',
-      height: '100%',
+      width: '100%', 
+      height: '100%', 
       position: 'relative',
-      overflow: 'hidden',
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
+      flexDirection: 'column'
     }}>
       <GradientBackground />
       <FloatingShapes />
-      
-      <div style={{
-        position: 'relative',
-        zIndex: 1,
-        textAlign: 'center',
-        width: '80%',
-        maxWidth: '1200px',
-      }}>
-        <div
+
+      <div
           style={{
             fontSize: '72px',
             fontWeight: 'bold',
             color: 'white',
             marginBottom: '20px',
+            marginTop: '70px',
             textShadow: '2px 2px 8px rgba(0,0,0,0.3)',
-            opacity: welcomeOpacity,
-            transform: `translateY(${welcomeY}px)`,
+            opacity: 1,
           }}
         >
           Welcome to
@@ -224,38 +183,74 @@ export const ApiVideo = () => {
             background: 'linear-gradient(to right, #60a5fa, #c084fc)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            marginBottom: '30px',
+            marginBottom: '0px',
             textShadow: '0 0 30px rgba(255,255,255,0.2)',
-            opacity: remotionOpacity,
-            transform: `scale(${remotionScale})`,
+            opacity: 1,
           }}
         >
           Remotion
         </div>
-
-        <div
+      
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        padding: '20px',
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '10px',
+        backgroundColor: 'rgba(0,0,0,0.3)'
+      }}>
+        <input 
+          type="text"
+          placeholder="Search todos..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           style={{
-            fontSize: '32px',
-            color: '#e2e8f0',
-            textShadow: '1px 1px 4px rgba(0,0,0,0.2)',
-            opacity: descriptionOpacity,
-            transform: `translateY(${descriptionY}px)`,
-            marginBottom: '40px',
+            padding: '10px',
+            borderRadius: '5px',
+            border: 'none',
+            width: '200px'
+          }}
+        />
+        <select 
+          value={filterCompleted ?? 'all'}
+          onChange={(e) => {
+            const value = e.target.value;
+            setFilterCompleted(
+              value === 'all' ? null : 
+              value === 'completed' ? true : false
+            );
+          }}
+          style={{
+            padding: '10px',
+            borderRadius: '5px',
+            border: 'none'
           }}
         >
-          Create amazing videos with React
-        </div>
-
-        <div style={{ marginTop: '20px' }}>
-          {data.map((item, index) => (
-            <DataItem 
-              key={item.id} 
-              item={item} 
-              index={index}
-              frame={frame}
-            />
-          ))}
-        </div>
+          <option value="all">All Todos</option>
+          <option value="completed">Completed</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: '60px'
+      }}>
+        {dataToRender.map((item, index) => (
+          <DataItem 
+            key={item.id} 
+            item={item} 
+            index={index} 
+            frame={frame} 
+          />
+        ))}
       </div>
     </div>
   );
